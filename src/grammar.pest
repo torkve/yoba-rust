@@ -1,0 +1,35 @@
+noop = { ^"иди нахуй" }
+stats = { ^"баланс нах" }
+and = { ^"и" }
+without = { ^"без" }
+
+alpha = _{ ASCII_ALPHA | 'а'..'я' | 'А'..'Я' }
+WHITESPACE = _{ (" " | "\t" | NEWLINE)+ }
+ident = @{ alpha ~ (alpha | ASCII_DIGIT )* }
+int_number = @{ ASCII_DIGIT+ }
+
+int_var_pair = _{ ident ~ int_number | int_number ~ ident }
+give = { ^"дай" ~ int_var_pair }
+take = { ^"на" ~ int_var_pair }
+rulez = { ^"люблю" ~ ident }
+call = { ^"хуйни" ~ ident }
+print = { ^"покажь" ~ ident }
+
+literal = _{ ident | int_number }
+arithmetics = _{ literal ~ (and ~ literal | without ~ literal)* }
+assign = { ident ~ ^"это" ~ arithmetics }
+if_expr = { ^"есть" ~ int_var_pair ~ ^"тада" ~ simple_command ~ ^"или" ~ simple_command }
+memorize = { ^"усеки" ~ ident ~ ^"это" ~ statement+ }
+simple_command = _{ noop
+					| give
+                    | take
+                    | rulez
+                    | call
+                    | print
+                    | stats
+                    | if_expr
+                    | assign
+                    | memorize
+                    }
+statement = _{ ^"чо" ~ simple_command ~ ^"йоба" }
+program = { statement+ }

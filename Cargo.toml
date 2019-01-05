@@ -1,0 +1,15 @@
+[package]
+name = "yoba"
+version = "0.1.0"
+authors = ["Vsevolod Velichko <torkvemada@sorokdva.net>"]
+edition = "2018"
+
+[dependencies]
+# nom = { version = "*", features = ["default", "verbose-errors"] }
+pest = "*"
+pest_derive = "*"
+
+[dependencies.rug]
+version = "1.2"
+default-features = false
+features = ["integer"]
