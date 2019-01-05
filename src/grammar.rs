@@ -2,7 +2,7 @@ use pest::Parser;
 use pest::error::Error;
 use pest::iterators::{Pair, Pairs};
 use pest_derive::Parser;
-use rug::Integer as Bigint;
+use num_bigint::BigInt;
 
 #[derive(Parser)]
 #[grammar = "grammar.pest"]
@@ -11,7 +11,7 @@ struct YobaParser;
 #[derive(Eq, PartialEq, Debug)]
 pub enum Expression<'a> {
     Literal(&'a str),
-    Integer(Bigint),
+    Integer(BigInt),
     Add(Box<Expression<'a>>, Box<Expression<'a>>),
     Sub(Box<Expression<'a>>, Box<Expression<'a>>),
 }
@@ -25,21 +25,21 @@ pub enum Statement<'a> {
     Call(&'a str),
     Print(&'a str),
     Stats,
-    Condition(&'a str, Bigint, Box<Statement<'a>>, Box<Statement<'a>>),
+    Condition(&'a str, BigInt, Box<Statement<'a>>, Box<Statement<'a>>),
     Function(&'a str, Vec<Statement<'a>>),
 }
 
-fn parse_int_var_pair<'a>(mut seq: Pairs<'a, Rule>) -> (&'a str, Bigint, Pairs<'a, Rule>) {
+fn parse_int_var_pair<'a>(mut seq: Pairs<'a, Rule>) -> (&'a str, BigInt, Pairs<'a, Rule>) {
     let first = seq.next().unwrap();
     match first.as_rule() {
         Rule::ident => (
             first.as_str(),
-            Bigint::from_str_radix(seq.next().unwrap().as_str(), 10).unwrap(),
+            BigInt::parse_bytes(seq.next().unwrap().as_str().as_bytes(), 10).unwrap(),
             seq,
         ),
         Rule::int_number => (
             seq.next().unwrap().as_str(),
-            Bigint::from_str_radix(first.as_str(), 10).unwrap(),
+            BigInt::parse_bytes(first.as_str().as_bytes(), 10).unwrap(),
             seq,
         ),
         _ => unreachable!()
@@ -50,7 +50,7 @@ fn parse_arithmetics<'a>(mut seq: Pairs<'a, Rule>) -> Expression<'a> {
     let item = seq.next().unwrap();
     let left = match item.as_rule() {
         Rule::ident => Expression::Literal(item.as_str()),
-        Rule::int_number => Expression::Integer(Bigint::from_str_radix(item.as_str(), 10).unwrap()),
+        Rule::int_number => Expression::Integer(BigInt::parse_bytes(item.as_str().as_bytes(), 10).unwrap()),
         _ => unreachable!()
     };
     match seq.next() {

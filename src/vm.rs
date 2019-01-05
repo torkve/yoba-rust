@@ -2,10 +2,10 @@ use std::io::Write;
 use std::collections::hash_map::{HashMap, Entry};
 
 use crate::grammar::{Statement, Expression};
-use rug::Integer;
+use num_bigint::BigInt;
 
 pub struct State<'a, T: Write> {
-    pub variables: HashMap<&'a str, Integer>,
+    pub variables: HashMap<&'a str, BigInt>,
     pub functions: HashMap<&'a str, &'a Vec<Statement<'a>>>,
     pub out: T,
 }
@@ -31,7 +31,7 @@ impl<'a, T: Write> State<'a, T> {
         }
     }
 
-    fn eval_arithmetics(&self, expr: &Expression<'a>) -> std::result::Result<Integer, String> {
+    fn eval_arithmetics(&self, expr: &Expression<'a>) -> std::result::Result<BigInt, String> {
         match expr {
             Expression::Integer(x) => Ok(x.clone()),
             Expression::Literal(x) => {
@@ -49,7 +49,7 @@ impl<'a, T: Write> State<'a, T> {
         match self.variables.entry(x) {
             Entry::Occupied(_) => Err(format!("я уже знаю за {}", x)),
             entry => {
-                entry.or_insert_with(Integer::new);
+                entry.or_insert_with(||0.into());
                 Ok(())
             }
         }
@@ -85,7 +85,7 @@ impl<'a, T: Write> State<'a, T> {
         Ok(())
     }
     
-    fn condition(&mut self, x: &'a str, val: Integer, cond_if: &'a Statement<'a>, cond_else: &'a Statement<'a>) -> Result {
+    fn condition(&mut self, x: &'a str, val: BigInt, cond_if: &'a Statement<'a>, cond_else: &'a Statement<'a>) -> Result {
         match self.variables.entry(x) {
             Entry::Vacant(_) => Err(format!("не пасу чо за {}", x)),
             Entry::Occupied(e) => {
