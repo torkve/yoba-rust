@@ -21,15 +21,15 @@ assign = { ident ~ ^"это" ~ arithmetics }
 if_expr = { ^"есть" ~ int_var_pair ~ ^"тада" ~ simple_command ~ ^"или" ~ simple_command }
 memorize = { ^"усеки" ~ ident ~ ^"это" ~ statement+ }
 simple_command = _{ noop
-					| give
-                    | take
-                    | rulez
-                    | call
-                    | print
-                    | stats
-                    | if_expr
-                    | assign
-                    | memorize
-                    }
+    | give
+    | take
+    | rulez
+    | call
+    | print
+    | stats
+    | if_expr
+    | assign
+    | memorize
+}
 statement = _{ ^"чо" ~ simple_command ~ ^"йоба" }
 program = { statement+ }
